@@ -1,15 +1,15 @@
-import { Routes, Route, HashRouter } from 'react-router-dom'
+import {Routes, Route, BrowserRouter} from 'react-router-dom'
 import ChatAI from '../pages/ChatAI'
 
 export default function Router() {
 	return (
-		<HashRouter>
+		<BrowserRouter>
 			<Routes>
 				<Route
 					path='/chatai'
-					element={<ChatAI />}
+					element={<ChatAI/>}
 				/>
 			</Routes>
-		</HashRouter>
+		</BrowserRouter>
 	)
 }
