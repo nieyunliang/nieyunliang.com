@@ -1,0 +1,53 @@
+.container {
+	height: 100%;
+	padding: 10px;
+	overflow-y: auto;
+	background-image: url("@/assets/chatgpt-logo.svg");
+	background-repeat: no-repeat;
+	background-size: 50%;
+	background-position: 50%;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.btn-add {
+	padding: 8px 0;
+	border: 1px solid #676767;
+	border-radius: 6px;
+	text-align: center;
+	color: #efefef;
+	cursor: pointer;
+
+	&:hover {
+		background-color: #303030;
+	}
+}
+
+.session-item {
+	margin-top: 20px;
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-radius: 6px;
+	color: #efefef;
+	font-size: 14px;
+	cursor: pointer;
+
+	.icon {
+		font-size: 16px;
+		color: #ccc;
+	}
+
+	&:hover,
+	&.focus {
+		background-color: #343434;
+	}
+}
+
+.session-item-left {
+	display: flex;
+	align-items: center;
+}
