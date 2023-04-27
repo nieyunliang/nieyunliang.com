@@ -1,10 +1,12 @@
-import {Fragment, useLayoutEffect, useState} from 'react'
+import { Fragment, useLayoutEffect, useState } from 'react'
 import styles from './index.module.less'
-import {Input, Layout, Image, ConfigProvider, Space} from 'antd'
-import {SessionList} from '@/dataBase'
+import { Input, Layout, Image, ConfigProvider, Space, Spin } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { SessionList } from '@/dataBase'
 import {
 	checkoutStore,
 	createStore,
+	deleteStore,
 	insertData,
 	cursorGetData,
 } from '@/dataBase/indexedDB'
@@ -13,7 +15,7 @@ import UserHeader from '@/assets/user-header.svg'
 import SendIcon from '@/assets/send.svg'
 import Sessions from './Sessions'
 
-const {Sider, Content, Footer} = Layout
+const { Sider, Content, Footer } = Layout
 export default function ChatAI() {
 	const [storeName, setStoreName] = useState('') //当前会话对应的storeName
 	const [messages, setMessages] = useState([])
@@ -21,25 +23,37 @@ export default function ChatAI() {
 
 	useLayoutEffect(() => {
 		const messagesBoxDom = document.getElementById('messages-box')
-		messagesBoxDom.scrollTo({top: messagesBoxDom.lastChild?.offsetTop ?? 0, behavior: 'smooth'})
+		messagesBoxDom.scrollTo({
+			top: messagesBoxDom.lastChild?.offsetTop ?? 0,
+			behavior: 'smooth',
+		})
 	}, [messages])
 
+	const [loading, setLoading] = useState(false)
 	const sendMessage = _messages => {
 		fetch(`/api/send_message`, {
 			method: 'POST',
-			headers: {'Content-type': 'application/json'},
+			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({
 				messages: _messages,
 			}),
 		})
 			.then(response => response.json())
-			.then(async ({choices = []}) => {
-				const {message} = choices[0]
-				setMessages(messages => [...messages, {...message}])
+			.then(async ({ choices = [] }) => {
+				const { message } = choices[0]
+				setMessages(_messages => [..._messages, { ...message }])
 				await saveMessagesLocal(storeName, message)
-			}).catch(err => {
-			console.log(err)
-		})
+			})
+			.catch(err => {
+				console.log(err)
+				setMessages(_messages => [
+					..._messages,
+					{ role: 'assistant', content: '哎呀，服务器出问题啦！' },
+				])
+			})
+			.finally(() => {
+				setLoading(false)
+			})
 	}
 
 	// 保存数据到本地
@@ -64,9 +78,10 @@ export default function ChatAI() {
 		}
 	}
 
-//	发送消息处理
+	//	发送消息处理
 	const send = async () => {
 		if (!message) return
+		setLoading(true)
 
 		const _message = await saveMessagesLocal(storeName, {
 			role: 'user',
@@ -79,7 +94,7 @@ export default function ChatAI() {
 		setMessage('')
 	}
 
-//	获取当前会话聊天记录
+	//	获取当前会话聊天记录
 	const getCurrentSession = async storeName => {
 		setStoreName(storeName)
 		const res = await cursorGetData(storeName)
@@ -97,14 +112,13 @@ export default function ChatAI() {
 	}
 
 	// 删除会话数据
-	const onRemoveSession = _storeName => {
-		if (_storeName === storeName) {
-			setStoreName('')
-			setMessages([])
-		}
+	const onRemoveSession = async _storeName => {
+		setStoreName('')
+		setMessages([])
+		await deleteStore(_storeName)
 	}
 
-	const formatDate = (timestamp) => {
+	const formatDate = timestamp => {
 		if (Number.isInteger(timestamp)) {
 			const date = new Date(timestamp)
 
@@ -142,7 +156,10 @@ export default function ChatAI() {
 				</Sider>
 				<Layout>
 					<Content>
-						<div id='messages-box' className={styles['messages-box']}>
+						<div
+							id='messages-box'
+							className={styles['messages-box']}
+						>
 							{messages.map((msg, i) => (
 								<Fragment key={i}>
 									{msg.role === 'assistant' ? (
@@ -174,6 +191,19 @@ export default function ChatAI() {
 									)}
 								</Fragment>
 							))}
+
+							{loading && (
+								<div style={{ textAlign: 'center' }}>
+									<Spin
+										indicator={
+											<LoadingOutlined
+												style={{ fontSize: 24 }}
+												spin
+											/>
+										}
+									/>
+								</div>
+							)}
 						</div>
 					</Content>
 					<Footer>
@@ -193,12 +223,14 @@ export default function ChatAI() {
 											alt=''
 											className={styles['btn-send']}
 											src={SendIcon}
-											onClick={send}
+											onClick={() => {
+												!loading && send()
+											}}
 										/>
 									}
 									onChange={e => setMessage(e.target.value)}
-									onKeyUp={async e => {
-										if (e.keyCode === 13) await send()
+									onKeyUp={e => {
+										if (e.key === 'Enter') !loading && send()
 									}}
 								/>
 							</ConfigProvider>

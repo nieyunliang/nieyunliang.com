@@ -52,6 +52,16 @@ function openDB(version = getIndexedDBversion()) {
 	})
 }
 
+/**
+ * 关闭数据库
+ * @param {object} db 数据库实例
+ */
+function closeDB(db) {
+	db.close()
+	console.log('数据库已关闭')
+}
+
+
 async function checkoutStore(storeName) {
 	const version = getIndexedDBversion()
 	const db = await openDB(version)
@@ -70,7 +80,6 @@ async function checkoutStore(storeName) {
  */
 async function createStore(storeName, storeKeyArray) {
 	const version = getIndexedDBversion()
-
 	const db = await openDB(version + 1)
 
 	// 创建存储库
@@ -88,6 +97,18 @@ async function createStore(storeName, storeKeyArray) {
 
 	closeDB(db)
 	return true
+}
+
+//删除存储库
+async function deleteStore(storeName) {
+	const version = getIndexedDBversion()
+	const db = await openDB(version + 1)
+
+	const contains = db.objectStoreNames.contains(storeName)
+
+	if (contains) {
+		db.deleteObjectStore(storeName)
+	}
 }
 
 /**
@@ -202,13 +223,5 @@ async function cursorDelete(storeName, indexName, indexValue) {
 	})
 }
 
-/**
- * 关闭数据库
- * @param {object} db 数据库实例
- */
-function closeDB(db) {
-	db.close()
-	console.log('数据库已关闭')
-}
 
-export {checkoutStore, createStore, insertData, cursorGetData, cursorDelete}
+export {checkoutStore, createStore, deleteStore, insertData, cursorGetData, cursorDelete}

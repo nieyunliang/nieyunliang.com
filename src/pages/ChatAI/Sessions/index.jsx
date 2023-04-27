@@ -1,5 +1,5 @@
-import {SessionList} from '@/dataBase'
-import {useState, useEffect} from 'react'
+import { SessionList } from '@/dataBase'
+import { useState, useEffect } from 'react'
 import styles from './index.module.less'
 import MessageIcon from '@/assets/message.svg'
 import {
@@ -8,7 +8,7 @@ import {
 	PlusOutlined,
 	CheckOutlined,
 } from '@ant-design/icons'
-import {Space} from 'antd'
+import { Space } from 'antd'
 
 export default function Sessions(props) {
 	const sessionList = new SessionList()
@@ -23,33 +23,33 @@ export default function Sessions(props) {
 		getSessionList()
 	}, [])
 
-	const [current, setCurrent] = useState(null)
-	const onCurrenChange = current => {
-		setCurrent(current.id)
-		props.onSessionChange(current.store_name)
-	}
-
-	// 删除会话
-	const remove = async ({id, store_name}) => {
-		const res = await sessionList.removeData(id)
-		if (res) {
-			props.onRemoveSession(store_name)
-
-			const _data = [...dataList]
-			const index = _data.findIndex(d => d.id === id)
-
-			if (~index) {
-				_data.splice(index)
-				setDataList(_data)
-			}
-		}
-	}
-
 	// 删除操作
 	const [waiting, setWaiting] = useState(false)
 	const confirmRemove = event => {
 		event.stopPropagation()
 		setWaiting(true)
+	}
+
+	// 删除会话
+	const remove = async ({ id, store_name }) => {
+		const res = await sessionList.removeData(id)
+		if (res) {
+			setWaiting(false)
+			props.onRemoveSession(store_name)
+
+			const index = dataList.findIndex(d => d.id === id)
+			if (~index) {
+				dataList.splice(index)
+				setDataList([...dataList])
+			}
+		}
+	}
+
+	const [current, setCurrent] = useState(null)
+	const onCurrenChange = current => {
+		setWaiting(false)
+		setCurrent(current.id)
+		props.onSessionChange(current.store_name)
 	}
 
 	const addSession = async () => {
@@ -62,6 +62,7 @@ export default function Sessions(props) {
 
 		if (res) {
 			setDataList([...dataList, res])
+			setCurrent(res.id)
 			props.onNewSession(store_name)
 		}
 	}
@@ -72,13 +73,15 @@ export default function Sessions(props) {
 				className={styles['btn-add']}
 				onClick={addSession}
 			>
-				<PlusOutlined/>
+				<PlusOutlined />
 				创建新的会话
 			</div>
 			{dataList?.map(d => (
 				<div
 					key={d.id}
-					className={`${styles['session-item']} ${d.id === current && styles.focus}`}
+					className={`${styles['session-item']} ${
+						d.id === current && styles.focus
+					}`}
 					onClick={() => {
 						onCurrenChange(d)
 					}}
@@ -87,13 +90,13 @@ export default function Sessions(props) {
 						<img
 							width={24}
 							src={MessageIcon}
-							style={{marginRight: 4}}
+							style={{ marginRight: 4 }}
 							alt=''
 						/>
 						{d.title}
 					</div>
-					{
-						d.id === current && (<>
+					{d.id === current && (
+						<>
 							{waiting ? (
 								<Space>
 									<CloseOutlined
@@ -117,8 +120,8 @@ export default function Sessions(props) {
 									onClick={confirmRemove}
 								/>
 							)}
-						</>)
-					}
+						</>
+					)}
 				</div>
 			))}
 		</div>

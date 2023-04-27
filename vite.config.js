@@ -1,12 +1,14 @@
-import {defineConfig} from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import viteCompression from 'vite-plugin-compression'
 import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react()],
+	plugins: [react(), viteCompression()],
 	server: {
 		port: 8000,
+		host: true,
 		proxy: {
 			'/api': {
 				target: 'http://43.153.19.186:80',
@@ -15,6 +17,6 @@ export default defineConfig({
 		},
 	},
 	resolve: {
-		alias: [{find: '@', replacement: path.resolve(__dirname, 'src')}],
+		alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
 	},
 })
