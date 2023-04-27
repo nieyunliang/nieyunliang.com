@@ -3,6 +3,7 @@ import styles from './index.module.less'
 import { Input, Layout, Image, ConfigProvider, Space, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { SessionList } from '@/dataBase'
+import { formatDate } from '@/utils'
 import {
 	checkoutStore,
 	createStore,
@@ -17,10 +18,17 @@ import Sessions from './Sessions'
 
 const { Sider, Content, Footer } = Layout
 export default function ChatAI() {
-	const [storeName, setStoreName] = useState('') //当前会话对应的storeName
+	const [storeName, setStoreName] = useState(`chat_${Date.now()}`) //当前会话对应的storeName
 	const [messages, setMessages] = useState([])
 	const [message, setMessage] = useState('')
 
+	const getNewStoreName = () => `chat_${Date.now()}`
+	const initChatList = () => {
+		setStoreName(getNewStoreName())
+		setMessages([])
+	}
+
+	// 页面滚动
 	useLayoutEffect(() => {
 		const messagesBoxDom = document.getElementById('messages-box')
 		messagesBoxDom.scrollTo({
@@ -39,16 +47,23 @@ export default function ChatAI() {
 			}),
 		})
 			.then(response => response.json())
-			.then(async ({ choices = [] }) => {
-				const { message } = choices[0]
-				const msg = await saveMessagesLocal(storeName, message)
+			.then(async res => {
+				const choices = res.choices
+				const message = res.message
+					? {
+							role: 'assistant',
+							content: `哎呀，服务器出问题啦！[${res.name}: ${res.message}]`,
+					  }
+					: choices[0].message
+
+				const msg = await saveMessagesLocal(message)
 				setMessages(_messages => [..._messages, { ...msg }])
 			})
 			.catch(err => {
 				console.log(err)
 				setMessages(_messages => [
 					..._messages,
-					{ role: 'assistant', content: '哎呀，服务器出问题啦！' },
+					{ role: 'assistant', content: '哎呀，请求出错啦！' },
 				])
 			})
 			.finally(() => {
@@ -56,9 +71,10 @@ export default function ChatAI() {
 			})
 	}
 
+	const [refreshSessionList, setRefreshSessionList] = useState(true)
 	// 保存数据到本地
-	const saveMessagesLocal = async (_storeName, data) => {
-		_storeName = _storeName || `chat_${Date.now()}`
+	const saveMessagesLocal = async data => {
+		const _storeName = storeName || getNewStoreName()
 
 		const checkoutStoreRes = await checkoutStore(_storeName)
 		console.log(`是否包含存储对象${_storeName}:${checkoutStoreRes}`)
@@ -67,13 +83,15 @@ export default function ChatAI() {
 			return await insertData(_storeName, data)
 		} else {
 			const createRes = await createStore(_storeName, ['role', 'content'])
-
 			if (createRes) {
 				const sessionList = new SessionList()
 				await sessionList.addData({
 					store_name: _storeName,
 					title: data.content,
 				})
+
+				setRefreshSessionList(true) //第一次创建会话，需要刷新会话列表
+				setStoreName(_storeName)
 
 				return await insertData(_storeName, data)
 			}
@@ -85,21 +103,21 @@ export default function ChatAI() {
 		if (!message) return
 		setLoading(true)
 
-		const _message = await saveMessagesLocal(storeName, {
+		const _message = await saveMessagesLocal({
 			role: 'user',
 			content: message,
 		})
 
 		const _messages = [...messages, _message]
-		setMessages(_messages)
 		sendMessage(_messages)
+		setMessages(_messages)
 		setMessage('')
 	}
 
 	//	获取当前会话聊天记录
-	const getCurrentSession = async storeName => {
-		setStoreName(storeName)
-		const res = await cursorGetData(storeName)
+	const getCurrentSession = async _storeName => {
+		setStoreName(_storeName)
+		const res = await cursorGetData(_storeName)
 
 		if (Array.isArray(res)) {
 			setMessages(res)
@@ -107,34 +125,16 @@ export default function ChatAI() {
 	}
 
 	// 初始化新的会话
-	const onNewSession = async storeName => {
-		setStoreName(storeName)
+	const onNewSession = async _storeName => {
+		setStoreName(_storeName)
 		setMessages([])
-		await createStore(storeName, ['role', 'content'])
+		await createStore(_storeName, ['role', 'content'])
 	}
 
 	// 删除会话数据
 	const onRemoveSession = async _storeName => {
-		setStoreName('')
-		setMessages([])
+		initChatList()
 		await deleteStore(_storeName)
-	}
-
-	const formatDate = timestamp => {
-		if (Number.isInteger(timestamp)) {
-			const date = new Date(timestamp)
-
-			const Y = date.getFullYear()
-			const M = date.getMonth() + 1
-			const D = date.getDate()
-			const h = date.getHours()
-			const m = date.getMinutes()
-			const s = date.getSeconds()
-
-			return `${Y}-${M}-${D} ${h}:${m}:${s}`
-		} else {
-			return timestamp
-		}
 	}
 
 	const formatContent = (content = '') => {
@@ -151,6 +151,8 @@ export default function ChatAI() {
 			<Layout>
 				<Sider>
 					<Sessions
+						refresh={refreshSessionList}
+						onRefreshFinish={() => setRefreshSessionList(false)}
 						onSessionChange={getCurrentSession}
 						onNewSession={onNewSession}
 						onRemoveSession={onRemoveSession}

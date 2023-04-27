@@ -1,1 +1,19 @@
 export const getFileUrl = path => new URL(path, import.meta.url).href
+
+// 时间戳转日期
+export const formatDate = timestamp => {
+	if (Number.isInteger(timestamp)) {
+		const date = new Date(timestamp)
+
+		const Y = date.getFullYear()
+		const M = date.getMonth() + 1
+		const D = date.getDate()
+		const h = date.getHours()
+		const m = date.getMinutes()
+		const s = date.getSeconds()
+
+		return `${Y}-${M}-${D} ${h}:${m}:${s}`
+	} else {
+		return timestamp
+	}
+}

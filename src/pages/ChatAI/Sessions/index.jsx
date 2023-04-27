@@ -18,10 +18,11 @@ export default function Sessions(props) {
 	const getSessionList = async () => {
 		const sessions = await sessionList.get()
 		setDataList(sessions)
+		props.onRefreshFinish()
 	}
 	useEffect(() => {
-		getSessionList()
-	}, [])
+		props.refresh && getSessionList()
+	}, [props.refresh])
 
 	// 删除操作
 	const [waiting, setWaiting] = useState(false)

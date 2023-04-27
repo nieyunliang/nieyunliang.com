@@ -8,7 +8,6 @@ export default defineConfig({
 	plugins: [react(), viteCompression()],
 	server: {
 		port: 8000,
-		host: true,
 		proxy: {
 			'/api': {
 				target: 'http://43.153.19.186:80',
