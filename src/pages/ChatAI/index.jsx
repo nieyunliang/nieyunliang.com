@@ -41,8 +41,8 @@ export default function ChatAI() {
 			.then(response => response.json())
 			.then(async ({ choices = [] }) => {
 				const { message } = choices[0]
-				setMessages(_messages => [..._messages, { ...message }])
-				await saveMessagesLocal(storeName, message)
+				const msg = await saveMessagesLocal(storeName, message)
+				setMessages(_messages => [..._messages, { ...msg }])
 			})
 			.catch(err => {
 				console.log(err)
