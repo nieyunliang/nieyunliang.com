@@ -57,7 +57,9 @@ export default function ChatAI() {
 	}
 
 	// 保存数据到本地
-	const saveMessagesLocal = async (_storeName = `chat_${Date.now()}`, data) => {
+	const saveMessagesLocal = async (_storeName, data) => {
+		_storeName = _storeName || `chat_${Date.now()}`
+
 		const checkoutStoreRes = await checkoutStore(_storeName)
 		console.log(`是否包含存储对象${_storeName}:${checkoutStoreRes}`)
 
