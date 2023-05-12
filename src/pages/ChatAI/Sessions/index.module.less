@@ -37,6 +37,7 @@
 	cursor: pointer;
 
 	.icon {
+		display: none;
 		font-size: 16px;
 		color: #ccc;
 	}
@@ -44,6 +45,12 @@
 	&:hover,
 	&.focus {
 		background-color: #343434;
+	}
+
+	&:hover {
+		.icon {
+			display: block;
+		}
 	}
 }
 

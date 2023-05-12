@@ -1,4 +1,4 @@
-import {nanoid} from 'nanoid'
+import { nanoid } from 'nanoid'
 
 const dbName = 'chats'
 
@@ -37,7 +37,7 @@ function openDB(version = getIndexedDBversion()) {
 		}
 		// 数据库打开失败的回调
 		request.onerror = function (event) {
-			console.log('数据库打开报错')
+			console.log('数据库打开报错', event)
 			reject(event)
 		}
 		// 数据库有更新时候的回调
@@ -60,7 +60,6 @@ function closeDB(db) {
 	db.close()
 	console.log('数据库已关闭')
 }
-
 
 async function checkoutStore(storeName) {
 	const version = getIndexedDBversion()
@@ -88,11 +87,11 @@ async function createStore(storeName, storeKeyArray) {
 		autoIncrement: true, // 实现自增
 	})
 	// 创建索引，在后面查询数据的时候可以根据索引查
-	objectStore.createIndex('id', 'id', {unique: false})
-	objectStore.createIndex('created_time', 'created_time', {unique: false})
+	objectStore.createIndex('id', 'id', { unique: false })
+	objectStore.createIndex('created_time', 'created_time', { unique: false })
 
 	storeKeyArray.forEach(key =>
-		objectStore.createIndex(key, key, {unique: false})
+		objectStore.createIndex(key, key, { unique: false })
 	)
 
 	closeDB(db)
@@ -109,6 +108,7 @@ async function deleteStore(storeName) {
 	if (contains) {
 		db.deleteObjectStore(storeName)
 	}
+	closeDB(db)
 }
 
 /**
@@ -119,7 +119,7 @@ async function deleteStore(storeName) {
 async function insertData(storeName, data) {
 	const db = await openDB()
 	return new Promise((resolve, reject) => {
-		const _data = {...data, id: nanoid(), created_time: Date.now(),}
+		const _data = { ...data, id: nanoid(), created_time: Date.now() }
 		const request = db
 			.transaction([storeName], 'readwrite') // 事务对象 指定表格名称和操作模式（"只读"或"读写"）
 			.objectStore(storeName) // 仓库对象
@@ -223,5 +223,11 @@ async function cursorDelete(storeName, indexName, indexValue) {
 	})
 }
 
-
-export {checkoutStore, createStore, deleteStore, insertData, cursorGetData, cursorDelete}
+export {
+	checkoutStore,
+	createStore,
+	deleteStore,
+	insertData,
+	cursorGetData,
+	cursorDelete,
+}

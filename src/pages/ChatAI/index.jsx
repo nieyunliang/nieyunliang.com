@@ -1,9 +1,9 @@
-import {Fragment, useEffect, useState} from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import style from './index.module.less'
-import {Input, Layout, Image, ConfigProvider, Space, Spin} from 'antd'
-import {LoadingOutlined} from '@ant-design/icons'
-import {SessionList} from '@/dataBase'
-import {formatDate} from '@/utils'
+import { Input, Layout, Image, ConfigProvider, Space, Spin } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { SessionList } from '@/dataBase'
+import { formatDate } from '@/utils'
 import {
 	checkoutStore,
 	createStore,
@@ -17,7 +17,7 @@ import UserHeader from '@/assets/user-header.svg'
 import SendIcon from '@/assets/send.svg'
 import Sessions from './Sessions'
 
-const {Sider, Content, Footer} = Layout
+const { Sider, Content, Footer } = Layout
 export default function ChatAI() {
 	const [storeName, setStoreName] = useState(`chat_${Date.now()}`) //当前会话对应的storeName
 	const [messages, setMessages] = useState([])
@@ -42,7 +42,7 @@ export default function ChatAI() {
 	const sendMessage = _messages => {
 		fetch(`/api/send_message`, {
 			method: 'POST',
-			headers: {'Content-type': 'application/json'},
+			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({
 				messages: _messages,
 			}),
@@ -52,19 +52,19 @@ export default function ChatAI() {
 				const choices = res.choices
 				const message = res.message
 					? {
-						role: 'assistant',
-						content: `哎呀，服务器出问题啦！[${res.name}: ${res.message}]`,
-					}
+							role: 'assistant',
+							content: `哎呀，服务器出问题啦！[${res.name}: ${res.message}]`,
+					  }
 					: choices[0].message
 
 				const msg = await saveMessagesLocal(message)
-				setMessages(_messages => [..._messages, {...msg}])
+				setMessages(_messages => [..._messages, { ...msg }])
 			})
 			.catch(err => {
 				console.log(err)
 				setMessages(_messages => [
 					..._messages,
-					{role: 'assistant', content: '哎呀，请求出错啦！'},
+					{ role: 'assistant', content: '哎呀，请求出错啦！' },
 				])
 			})
 			.finally(() => {
@@ -126,16 +126,15 @@ export default function ChatAI() {
 	}
 
 	// 初始化新的会话
-	const onNewSession = async _storeName => {
+	const onNewSession = _storeName => {
 		setStoreName(_storeName)
 		setMessages([])
-		await createStore(_storeName, ['role', 'content'])
 	}
 
 	// 删除会话数据
 	const onRemoveSession = async _storeName => {
 		initChatList()
-		await deleteStore(_storeName)
+		// await deleteStore(_storeName)
 	}
 
 	const formatContent = (content = '') => {
@@ -148,7 +147,7 @@ export default function ChatAI() {
 	}
 
 	return (
-		<Layout style={{height: '100vh'}}>
+		<Layout style={{ height: '100vh' }}>
 			<Sider width={260}>
 				<Sessions
 					refresh={refreshSessionList}
@@ -176,13 +175,11 @@ export default function ChatAI() {
 											<div>{formatDate(msg.created_time)}</div>
 										</Space>
 										<pre className={style.bubble}>
-												{formatContent(msg.content)}
-											</pre>
+											{formatContent(msg.content)}
+										</pre>
 									</div>
 								) : (
-									<div
-										className={`${style['message-item']} ${style.right}`}
-									>
+									<div className={`${style['message-item']} ${style.right}`}>
 										<Space className={style.sender}>
 											<div>{formatDate(msg.created_time)}</div>
 											<Image
@@ -197,10 +194,13 @@ export default function ChatAI() {
 						))}
 
 						{loading && (
-							<div style={{textAlign: 'center'}}>
+							<div style={{ textAlign: 'center' }}>
 								<Spin
 									indicator={
-										<img src={ChatGPTLogo} className={style.loading}/>
+										<img
+											src={ChatGPTLogo}
+											className={style.loading}
+										/>
 									}
 								/>
 							</div>

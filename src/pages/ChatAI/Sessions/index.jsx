@@ -1,14 +1,8 @@
-import {SessionList} from '@/dataBase'
-import {useState, useEffect} from 'react'
+import { SessionList } from '@/dataBase'
+import { useState, useEffect } from 'react'
 import style from './index.module.less'
 import MessageIcon from '@/assets/message.svg'
-import {
-	DeleteOutlined,
-	CloseOutlined,
-	PlusOutlined,
-	CheckOutlined,
-} from '@ant-design/icons'
-import {Space} from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
 export default function Sessions(props) {
 	const sessionList = new SessionList()
@@ -24,23 +18,15 @@ export default function Sessions(props) {
 		props.refresh && getSessionList()
 	}, [props.refresh])
 
-	// 删除操作
-	const [waiting, setWaiting] = useState(false)
-	const confirmRemove = event => {
-		event.stopPropagation()
-		setWaiting(true)
-	}
-
 	// 删除会话
-	const remove = async ({id, store_name}) => {
+	const remove = async ({ id, store_name }) => {
 		const res = await sessionList.removeData(id)
 		if (res) {
-			setWaiting(false)
 			props.onRemoveSession(store_name)
 
 			const index = dataList.findIndex(d => d.id === id)
 			if (~index) {
-				dataList.splice(index)
+				dataList.splice(index, 1)
 				setDataList([...dataList])
 			}
 		}
@@ -48,7 +34,6 @@ export default function Sessions(props) {
 
 	const [current, setCurrent] = useState(null)
 	const onCurrenChange = current => {
-		setWaiting(false)
 		setCurrent(current.id)
 		props.onSessionChange(current.store_name)
 	}
@@ -74,7 +59,7 @@ export default function Sessions(props) {
 				className={style['btn-add']}
 				onClick={addSession}
 			>
-				<PlusOutlined/>
+				<PlusOutlined />
 				创建新的会话
 			</div>
 			{dataList?.map(d => (
@@ -91,38 +76,18 @@ export default function Sessions(props) {
 						<img
 							width={24}
 							src={MessageIcon}
-							style={{marginRight: 4}}
+							style={{ marginRight: 4 }}
 							alt=''
 						/>
 						<div className={style['session-title']}>{d.title}</div>
 					</div>
-					{d.id === current && (
-						<>
-							{waiting ? (
-								<Space>
-									<CloseOutlined
-										className={style.icon}
-										onClick={event => {
-											event.stopPropagation()
-											setWaiting(false)
-										}}
-									/>
-									<CheckOutlined
-										className={style.icon}
-										onClick={event => {
-											event.stopPropagation()
-											remove(d)
-										}}
-									/>
-								</Space>
-							) : (
-								<DeleteOutlined
-									className={style.icon}
-									onClick={confirmRemove}
-								/>
-							)}
-						</>
-					)}
+					<DeleteOutlined
+						className={style.icon}
+						onClick={event => {
+							event.stopPropagation()
+							remove(d)
+						}}
+					/>
 				</div>
 			))}
 		</div>
