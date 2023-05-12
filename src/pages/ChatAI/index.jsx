@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import style from './index.module.less'
 import { Input, Layout, Image, ConfigProvider, Space, Spin } from 'antd'
 import { SessionList } from '@/dataBase'
-import { formatDate } from '@/utils'
+import { formatDate, isMobile } from '@/utils'
 import {
 	checkoutStore,
 	createStore,
@@ -29,6 +29,7 @@ export default function ChatAI() {
 		setMessages([])
 	}
 
+	console.log(isMobile())
 	// 页面滚动
 	useEffect(() => {
 		const messagesBoxDom = document.getElementById('messages-box')
@@ -149,15 +150,17 @@ export default function ChatAI() {
 
 	return (
 		<Layout style={{ height: '100vh' }}>
-			<Sider width={260}>
-				<Sessions
-					refresh={refreshSessionList}
-					onRefreshFinish={() => setRefreshSessionList(false)}
-					onSessionChange={getCurrentSession}
-					onNewSession={onNewSession}
-					onRemoveSession={onRemoveSession}
-				/>
-			</Sider>
+			{!isMobile() && (
+				<Sider width={260}>
+					<Sessions
+						refresh={refreshSessionList}
+						onRefreshFinish={() => setRefreshSessionList(false)}
+						onSessionChange={getCurrentSession}
+						onNewSession={onNewSession}
+						onRemoveSession={onRemoveSession}
+					/>
+				</Sider>
+			)}
 			<Layout>
 				<Content>
 					<div

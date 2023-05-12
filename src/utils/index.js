@@ -17,3 +17,9 @@ export const formatDate = timestamp => {
 		return timestamp
 	}
 }
+
+// 设备信息-iPhone或者Android
+export const isMobile = () => {
+	const { userAgent } = window.navigator
+	return !!~userAgent.indexOf('iPhone') || !!~userAgent.indexOf('Android')
+}
