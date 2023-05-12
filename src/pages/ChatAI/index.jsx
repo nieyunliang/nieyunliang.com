@@ -1,13 +1,11 @@
 import { Fragment, useEffect, useState } from 'react'
 import style from './index.module.less'
 import { Input, Layout, Image, ConfigProvider, Space, Spin } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
 import { SessionList } from '@/dataBase'
 import { formatDate } from '@/utils'
 import {
 	checkoutStore,
 	createStore,
-	deleteStore,
 	insertData,
 	cursorGetData,
 } from '@/dataBase/indexedDB'
@@ -18,12 +16,14 @@ import SendIcon from '@/assets/send.svg'
 import Sessions from './Sessions'
 
 const { Sider, Content, Footer } = Layout
+
 export default function ChatAI() {
-	const [storeName, setStoreName] = useState(`chat_${Date.now()}`) //当前会话对应的storeName
+	const getNewStoreName = () => `chat_${Date.now()}`
+
+	const [storeName, setStoreName] = useState(getNewStoreName()) //当前会话对应的storeName
 	const [messages, setMessages] = useState([])
 	const [message, setMessage] = useState('')
 
-	const getNewStoreName = () => `chat_${Date.now()}`
 	const initChatList = () => {
 		setStoreName(getNewStoreName())
 		setMessages([])
@@ -91,7 +91,7 @@ export default function ChatAI() {
 					title: data.content,
 				})
 
-				setRefreshSessionList(true) //第一次创建会话，需要刷新会话列表
+				setRefreshSessionList(true) //创建会话，刷新会话列表
 				setStoreName(_storeName)
 
 				return await insertData(_storeName, data)
@@ -117,6 +117,7 @@ export default function ChatAI() {
 
 	//	获取当前会话聊天记录
 	const getCurrentSession = async _storeName => {
+		if (_storeName === storeName) return
 		setStoreName(_storeName)
 		const res = await cursorGetData(_storeName)
 
@@ -126,8 +127,8 @@ export default function ChatAI() {
 	}
 
 	// 初始化新的会话
-	const onNewSession = _storeName => {
-		setStoreName(_storeName)
+	const onNewSession = () => {
+		setStoreName(getNewStoreName())
 		setMessages([])
 	}
 

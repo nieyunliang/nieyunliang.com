@@ -6,17 +6,27 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 
 export default function Sessions(props) {
 	const sessionList = new SessionList()
+
 	// 会话列表
 	const [dataList, setDataList] = useState([])
+
 	// 检查会话列表清单
 	const getSessionList = async () => {
 		const sessions = await sessionList.get()
 		setDataList(sessions)
 		props.onRefreshFinish()
 	}
+
 	useEffect(() => {
 		props.refresh && getSessionList()
 	}, [props.refresh])
+
+	// 当前选择的会话
+	const [current, setCurrent] = useState(null)
+	const onCurrenChange = current => {
+		setCurrent(current.id)
+		props.onSessionChange(current.store_name)
+	}
 
 	// 删除会话
 	const remove = async ({ id, store_name }) => {
@@ -32,25 +42,9 @@ export default function Sessions(props) {
 		}
 	}
 
-	const [current, setCurrent] = useState(null)
-	const onCurrenChange = current => {
-		setCurrent(current.id)
-		props.onSessionChange(current.store_name)
-	}
-
-	const addSession = async () => {
-		const store_name = `chat_${Date.now()}`
-		const _data = {
-			store_name,
-			title: `新的会话${dataList.length + 1}`,
-		}
-		const res = await sessionList.addData(_data)
-
-		if (res) {
-			setDataList([...dataList, res])
-			setCurrent(res.id)
-			props.onNewSession(store_name)
-		}
+	const addSession = () => {
+		setCurrent(null)
+		props.onNewSession()
 	}
 
 	return (
