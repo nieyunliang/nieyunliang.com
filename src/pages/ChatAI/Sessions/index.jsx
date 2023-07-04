@@ -51,7 +51,7 @@ export default function Sessions(props) {
 		<div className={style.container}>
 			<div
 				className={style['btn-add']}
-				onClick={addSession}
+				onClick={() => !props.loading && addSession()}
 			>
 				<PlusOutlined />
 				创建新的会话
@@ -63,7 +63,7 @@ export default function Sessions(props) {
 						d.id === current && style.focus
 					}`}
 					onClick={() => {
-						onCurrenChange(d)
+						!props.loading && onCurrenChange(d)
 					}}
 				>
 					<div className={style['session-item-left']}>
@@ -79,7 +79,7 @@ export default function Sessions(props) {
 						className={style.icon}
 						onClick={event => {
 							event.stopPropagation()
-							remove(d)
+							!props.loading && remove(d)
 						}}
 					/>
 				</div>

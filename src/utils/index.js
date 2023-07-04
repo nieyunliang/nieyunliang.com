@@ -1,4 +1,5 @@
-export const getFileUrl = path => new URL(path, import.meta.url).href
+export const getFileUrl = path =>
+	new URL(`../assets/${path}`, import.meta.url).href
 
 // 时间戳转日期
 export const formatDate = timestamp => {

@@ -136,7 +136,6 @@ export default function ChatAI() {
 	// 删除会话数据
 	const onRemoveSession = async _storeName => {
 		initChatList()
-		// await deleteStore(_storeName)
 	}
 
 	const formatContent = (content = '') => {
@@ -153,6 +152,7 @@ export default function ChatAI() {
 			{!isMobile() && (
 				<Sider width={260}>
 					<Sessions
+						loading={loading}
 						refresh={refreshSessionList}
 						onRefreshFinish={() => setRefreshSessionList(false)}
 						onSessionChange={getCurrentSession}
