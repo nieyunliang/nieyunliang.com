@@ -18,3 +18,8 @@
 p {
 	white-space: normal;
 }
+
+ol,
+ul {
+	list-style-position: inside;
+}
