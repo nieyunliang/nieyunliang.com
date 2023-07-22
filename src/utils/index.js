@@ -7,7 +7,7 @@ export const formatDate = timestamp => {
 		const date = new Date(timestamp)
 
 		const Y = date.getFullYear()
-		const M = date.getMonth() + 1
+		const M = `0${date.getMonth() + 1}`.slice(-2)
 		const D = date.getDate()
 		const h = date.getHours()
 		const m = date.getMinutes()

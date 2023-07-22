@@ -10,7 +10,7 @@ export default defineConfig({
 		port: 8000,
 		proxy: {
 			'/api': {
-				target: 'http://43.153.19.186:80',
+				target: 'http://43.153.19.186:8080',
 				rewrite: path => path.replace('/api', ''),
 			},
 		},

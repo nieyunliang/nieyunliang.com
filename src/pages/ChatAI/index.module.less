@@ -33,26 +33,13 @@
 	.bubble {
 		margin-top: 4px;
 		max-width: 80%;
-		white-space: pre-wrap;
+		min-width: 50px;
 		padding: 10px;
 		border-radius: 8px;
 		background-color: #fff;
-		box-shadow: 2px 2px 4px 0 #dddddd;
+		box-shadow: 2px 2px 4px 0 #ddd;
 		font-size: 14px;
 	}
-}
-
-@keyframes loadingAnimation {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-.loading {
-	animation: loadingAnimation 2s infinite linear;
 }
 
 .input-box {
@@ -63,4 +50,24 @@
 	width: 30px;
 	height: 30px;
 	cursor: pointer;
+}
+
+@keyframes blink {
+	0%,
+	100% {
+		color: #333;
+	}
+	50% {
+		color: transparent;
+	}
+}
+.cursor {
+	animation: blink 0.6s linear infinite;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.hljs {
+	padding: 10px;
+	border-radius: 4px;
 }
