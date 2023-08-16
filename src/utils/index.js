@@ -10,8 +10,8 @@ export const formatDate = timestamp => {
 		const M = `0${date.getMonth() + 1}`.slice(-2)
 		const D = date.getDate()
 		const h = date.getHours()
-		const m = date.getMinutes()
-		const s = date.getSeconds()
+		const m = `0${date.getMinutes()}`.slice(-2)
+		const s = `0${date.getSeconds()}`.slice(-2)
 
 		return `${Y}-${M}-${D} ${h}:${m}:${s}`
 	} else {

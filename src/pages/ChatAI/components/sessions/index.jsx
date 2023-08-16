@@ -1,4 +1,4 @@
-import { SessionList } from '@/dataBase'
+import { SessionList } from '@/database'
 import { useState, useEffect } from 'react'
 import style from './index.module.less'
 import MessageIcon from '@/assets/message.svg'

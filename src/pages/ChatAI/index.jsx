@@ -1,138 +1,82 @@
 import 'highlight.js/styles/base16/material-darker.css'
 import style from './index.module.less'
-import { Fragment, useEffect, useState } from 'react'
-import { Input, Layout, Image, ConfigProvider, Space } from 'antd'
-import hljs from 'highlight.js'
-import { Marked } from 'marked'
-import { mangle } from 'marked-mangle'
-import { markedHighlight } from 'marked-highlight'
-import { gfmHeadingId } from 'marked-gfm-heading-id'
-import { SessionList } from '@/dataBase'
-import { formatDate, isMobile } from '@/utils'
+import { useState } from 'react'
+import { useReactive, useBoolean, useUpdateEffect } from 'ahooks'
+import { Input, Layout, ConfigProvider } from 'antd'
+import { isMobile } from '@/utils'
 import {
 	checkoutStore,
 	createStore,
 	insertData,
 	cursorGetData,
-} from '@/dataBase/indexedDB'
-import ChatGPTHeader from '@/assets/chatgpt-icon.svg'
-import UserHeader from '@/assets/user-header.svg'
+} from '@/database/indexedDB'
+import { SessionList } from '@/database'
 import SendIcon from '@/assets/send.svg'
-import Sessions from './Sessions'
+import Sessions from './components/sessions'
+import Messages from './components/messages/messages'
+import sendMessageGPT from '../../utils/sendMessageGPT'
 
 const { Sider, Content, Footer } = Layout
-
-const parsePack = str => {
-	// 定义正则表达式匹配模式
-	const pattern = /data:\s*({.*?})\s*\n/g
-	// 定义一个数组来存储所有匹 配到的 JSON 对象
-	const result = []
-	// 使用正则表达式匹配完整的 JSON 对象并解析它们
-	let match
-	while ((match = pattern.exec(str)) !== null) {
-		const jsonStr = match[1]
-		try {
-			const json = JSON.parse(jsonStr)
-			result.push(json)
-		} catch (e) {
-			console.log(e)
-		}
-	}
-	// 输出所有解析出的 JSON 对象
-	return result
-}
 
 export default function ChatAI() {
 	const getNewStoreName = () => `chat_${Date.now()}`
 
+	const [refreshSessionList, setRefreshSessionList] = useState(true)
 	const [storeName, setStoreName] = useState(getNewStoreName()) //当前会话对应的storeName
-	const [messages, setMessages] = useState([])
 	const [message, setMessage] = useState('')
+	const [errMessage, setErrMessage] = useState('')
+	let messages = useReactive([])
+
+	const [loading, { setTrue: openLoading, setFalse: closeLoading }] =
+		useBoolean(false)
 
 	const initChatList = () => {
 		setStoreName(getNewStoreName())
-		setMessages([])
+		setErrMessage('')
+		messages.length = 0
 	}
 
 	const messagesBoxDom = document.getElementById('messages-box')
-	const lastMessageDom = document.getElementById('last-message')
-	const lastMessageDomHeight = lastMessageDom?.offsetHeight
+	const lastMessageDom = messagesBoxDom?.lastChild
 	// 页面滚动
-	useEffect(() => {
-		if (messages.length || lastMessageDomHeight) {
-			const offsetTop = messagesBoxDom.lastChild?.offsetTop
-			const height = messagesBoxDom.lastChild?.offsetHeight
-			messagesBoxDom.scrollTo({
-				top: offsetTop + height ?? 0,
-				behavior: 'smooth',
-			})
-		}
-	}, [messages, lastMessageDomHeight])
-
-	const [loading, setLoading] = useState(false)
-
-	const [lastIndexMessage, setLastIndexMessage] = useState(null)
-	const sendMessage = _messages => {
-		setLastIndexMessage({ role: 'assistant', content: '' })
-
-		fetch(`/api/send_message`, {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({
-				messages: _messages,
-			}),
+	useUpdateEffect(() => {
+		const offsetTop = lastMessageDom?.offsetTop
+		const height = lastMessageDom?.offsetHeight
+		messagesBoxDom.scrollTo({
+			top: offsetTop + height ?? 0,
+			behavior: 'smooth',
 		})
-			.then(response => response.json())
+	}, [lastMessageDom?.offsetHeight])
+
+	const sendMessage = _messages => {
+		sendMessageGPT(_messages)
 			.then(async res => {
 				if (res.message) {
-					setLastIndexMessage({
-						role: 'assistant',
-						content: `服务器出错啦！[${res.name}: ${res.message}]`,
-					})
+					setErrMessage(`服务器出错了！[${res.name}: ${res.message}]`)
 					return
 				}
 
-				const datas = parsePack(res)
-				const length = datas.length
+				const { id, role, content, created_time } = await saveMessagesLocal(
+					res.choices[0].message
+				)
+				messages.push({ id, role, created_time, content: '' })
 
+				const length = content.length
+				const lastMessage = messages.at(-1)
 				for (let i = 0; i < length; i++) {
 					requestIdleCallback(() => {
-						const data = datas[i]
-						const { delta, finish_reason } = data.choices[0]
-
-						const { content = '', role } = delta
-
-						setLastIndexMessage(state => {
-							const newState = { ...state }
-							Object.assign(newState, {
-								content: (newState?.content ?? '') + content,
-								created_time: data.created,
-							})
-
-							if (role) {
-								Object.assign(newState, { role })
-							}
-
-							if (finish_reason === 'stop') {
-								Object.assign(newState, { finish_reason })
-							}
-							return newState
-						})
+						lastMessage.content += content.at(i)
 					})
 				}
 			})
 			.catch(() => {
-				setMessages(_messages => [
-					..._messages,
-					{ role: 'assistant', content: '哎呀，请求出错啦！' },
-				])
+				setErrMessage('请求出错了！')
 			})
 			.finally(() => {
-				setLoading(false)
+				closeLoading()
 			})
 	}
 
-	const [refreshSessionList, setRefreshSessionList] = useState(true)
 	// 保存数据到本地
 	const saveMessagesLocal = async data => {
 		const _storeName = storeName || getNewStoreName()
@@ -159,65 +103,33 @@ export default function ChatAI() {
 		}
 	}
 
-	// 回答完成，保存数据
-	const answerFinish = async () => {
-		const msg = await saveMessagesLocal(lastIndexMessage)
-		setMessages(_messages => [..._messages, { ...msg }])
-		setLastIndexMessage(null)
-	}
-	useEffect(() => {
-		if (lastIndexMessage?.finish_reason === 'stop') {
-			answerFinish()
-		}
-	}, [lastIndexMessage?.finish_reason])
-
 	//	发送消息处理
 	const send = async () => {
 		if (loading || !message) return
-		setLoading(true)
+		openLoading()
 
 		const _message = await saveMessagesLocal({
 			role: 'user',
 			content: message,
 		})
 
-		const _messages = [...messages, _message]
-		sendMessage(_messages)
-		setMessages(_messages)
+		messages.push(_message)
 		setMessage('')
+		sendMessage([...messages])
 	}
 
 	//	获取当前会话聊天记录
 	const getCurrentSession = async _storeName => {
 		if (_storeName === storeName) return
 		setStoreName(_storeName)
-		const data = await cursorGetData(_storeName)
+		setErrMessage('')
+		messages.length = 0
 
-		if (Array.isArray(data)) {
-			setMessages(data)
+		const _messages = await cursorGetData(_storeName)
+		if (Array.isArray(_messages)) {
+			messages.push(..._messages)
 		}
 	}
-
-	const marked = new Marked(
-		markedHighlight({
-			langPrefix: 'hljs language-',
-			highlight(code) {
-				if (code) {
-					try {
-						// 使用 highlight.js 对代码进行高亮显示
-						return hljs.highlightAuto(code).value
-					} catch (error) {
-						console.log(error)
-					}
-				}
-			},
-		})
-	)
-	marked.use(mangle())
-	marked.use(gfmHeadingId({ prefix: 'my-prefix-' }))
-	const formatContent = (content = '') => ({
-		__html: marked.parse(content),
-	})
 
 	return (
 		<Layout style={{ height: '100vh' }}>
@@ -235,65 +147,11 @@ export default function ChatAI() {
 			)}
 			<Layout>
 				<Content>
-					<div
-						id='messages-box'
-						className={style['messages-box']}
-					>
-						{messages.map(msg => (
-							<Fragment key={msg.id}>
-								{msg.role === 'assistant' ? (
-									<div className={style['message-item']}>
-										<Space className={style.sender}>
-											<Image
-												width={30}
-												src={ChatGPTHeader}
-											/>
-											<div>{formatDate(msg.created_time)}</div>
-										</Space>
-										<div className={style.bubble}>
-											<pre
-												dangerouslySetInnerHTML={formatContent(msg.content)}
-											/>
-										</div>
-									</div>
-								) : (
-									<div className={`${style['message-item']} ${style.right}`}>
-										<Space className={style.sender}>
-											<div>{formatDate(msg.created_time)}</div>
-											<Image
-												width={30}
-												src={UserHeader}
-											/>
-										</Space>
-										<div className={style.bubble}>{msg.content}</div>
-									</div>
-								)}
-							</Fragment>
-						))}
-
-						{lastIndexMessage ? (
-							<div
-								id='last-message'
-								className={style['message-item']}
-							>
-								<Space className={style.sender}>
-									<Image
-										width={30}
-										src={ChatGPTHeader}
-									/>
-									<div>{formatDate(lastIndexMessage.created_time)}</div>
-								</Space>
-								<div className={style.bubble}>
-									<pre
-										dangerouslySetInnerHTML={formatContent(
-											lastIndexMessage.content
-										)}
-									></pre>
-									{loading ? <span className={style.cursor}>|</span> : null}
-								</div>
-							</div>
-						) : null}
-					</div>
+					<Messages
+						messages={messages}
+						loading={loading}
+						error={errMessage}
+					/>
 				</Content>
 				<Footer>
 					<div className={style['input-box']}>
