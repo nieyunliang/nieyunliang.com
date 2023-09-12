@@ -5,17 +5,17 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), viteCompression()],
-	server: {
-		port: 8000,
-		proxy: {
-			'/api': {
-				target: 'http://43.153.19.186:8080',
-				rewrite: path => path.replace('/api', ''),
-			},
-		},
-	},
-	resolve: {
-		alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
-	},
+  plugins: [react(), viteCompression()],
+  server: {
+    port: 8000,
+    proxy: {
+      '/api': {
+        target: 'http://170.106.152.19',
+        rewrite: path => path.replace('/api', '')
+      }
+    }
+  },
+  resolve: {
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }]
+  }
 })
