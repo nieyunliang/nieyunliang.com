@@ -25,7 +25,7 @@ export default function ChatAI() {
   const [storeName, setStoreName] = useState(getNewStoreName()) //当前会话对应的storeName
   const [message, setMessage] = useState('')
   const [errMessage, setErrMessage] = useState('')
-  let messages = useReactive([])
+  const messages = useReactive([])
 
   const [loading, { setTrue: openLoading, setFalse: closeLoading }] =
     useBoolean(false)
