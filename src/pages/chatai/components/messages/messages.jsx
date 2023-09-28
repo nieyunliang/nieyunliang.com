@@ -1,7 +1,7 @@
 import { Space, Image, Alert } from 'antd'
 import style from './index.module.less'
-import ChatGPTHeader from '@/assets/chatgpt-icon.svg'
-import MessageItem from './message-item.jsx'
+import MessageItem from './message-item'
+import { getFileUrl } from '@/utils'
 
 export default function Messages({ messages, loading, error }) {
   return (
@@ -21,7 +21,7 @@ export default function Messages({ messages, loading, error }) {
           <Space className={style.sender}>
             <Image
               width={30}
-              src={ChatGPTHeader}
+              src={getFileUrl('chatgpt-icon')}
             />
           </Space>
           <div className={style.bubble}>

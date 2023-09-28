@@ -11,10 +11,10 @@ import {
   cursorGetData
 } from '@/database/indexedDB'
 import { SessionList } from '@/database'
-import SendIcon from '@/assets/send.svg'
 import Sessions from './components/sessions'
 import Messages from './components/messages/messages'
 import sendMessageGPT from '../../utils/sendMessageGPT'
+import { getFileUrl } from '@/utils'
 
 const { Sider, Content, Footer } = Layout
 
@@ -164,7 +164,7 @@ export default function ChatAI() {
                   <img
                     alt=''
                     className={style['btn-send']}
-                    src={SendIcon}
+                    src={getFileUrl('send.svg')}
                     onClick={send}
                   />
                 }

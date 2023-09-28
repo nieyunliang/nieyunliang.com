@@ -1,63 +1,71 @@
 .container {
-	height: 100%;
-	padding: 10px;
-	overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding: 10px;
+  overflow-y: auto;
 
-	&::-webkit-scrollbar {
-		display: none;
-	}
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .btn-add {
-	padding: 8px 0;
-	border: 1px solid #676767;
-	border-radius: 6px;
-	text-align: center;
-	color: #efefef;
-	cursor: pointer;
+  padding: 8px 0;
+  border: 1px solid #676767;
+  border-radius: 6px;
+  text-align: center;
+  color: #efefef;
+  cursor: pointer;
 
-	&:hover {
-		background-color: #303030;
-	}
+  &:hover {
+    background-color: #303030;
+  }
 }
 
 .session-item {
-	margin-top: 20px;
-	padding: 10px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-radius: 6px;
-	color: #efefef;
-	font-size: 14px;
-	cursor: pointer;
+  margin-top: 20px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 6px;
+  color: #efefef;
+  font-size: 14px;
+  cursor: pointer;
 
-	.icon {
-		display: none;
-		font-size: 16px;
-		color: #ccc;
-	}
+  .icon {
+    display: none;
+    font-size: 16px;
+    color: #ccc;
+  }
 
-	&:hover,
-	&.focus {
-		background-color: #343434;
-	}
+  &:hover,
+  &.focus {
+    background-color: #343434;
+  }
 
-	&:hover {
-		.icon {
-			display: block;
-		}
-	}
+  &:hover {
+    .icon {
+      display: block;
+    }
+  }
 }
 
 .session-item-left {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .session-title {
-	width: 170px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+  width: 170px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.scroll-list {
+  flex-grow: 1;
+  overflow-y: auto;
 }

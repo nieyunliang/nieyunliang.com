@@ -1,6 +1,6 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import ChatAI from '../pages/chatai'
 import Home from '../pages/home'
+import ChatAI from '../pages/chatai'
 
 export default function Router() {
   return (
