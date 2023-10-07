@@ -5,7 +5,7 @@ import { Marked } from 'marked'
 import { mangle } from 'marked-mangle'
 import { markedHighlight } from 'marked-highlight'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
-import { Space, Image } from 'antd'
+import { Space } from 'antd'
 import { formatDate, getFileUrl } from '@/utils'
 
 function ContentComponent({ content }) {
@@ -37,9 +37,9 @@ function AssistantComponent({ message }) {
   return (
     <div className={style['message-item']}>
       <Space className={style.sender}>
-        <Image
-          width={30}
+        <img
           src={getFileUrl('chatgpt-icon.svg')}
+          style={{ width: 30 }}
         />
         <div>{formatDate(message.created_time)}</div>
       </Space>
@@ -55,9 +55,9 @@ function UserComponent({ message }) {
     <div className={`${style['message-item']} ${style.right}`}>
       <Space className={style.sender}>
         <div>{formatDate(message.created_time)}</div>
-        <Image
-          width={30}
+        <img
           src={getFileUrl('user-header.svg')}
+          style={{ width: 30 }}
         />
       </Space>
       <div className={style.bubble}>{message.content}</div>

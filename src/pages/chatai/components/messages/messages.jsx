@@ -19,9 +19,9 @@ export default function Messages({ messages, loading, error }) {
       {loading ? (
         <div className={style['message-item']}>
           <Space className={style.sender}>
-            <Image
-              width={30}
-              src={getFileUrl('chatgpt-icon')}
+            <img
+              src={getFileUrl('chatgpt-icon.svg')}
+              style={{ width: 30 }}
             />
           </Space>
           <div className={style.bubble}>
