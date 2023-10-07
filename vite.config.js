@@ -21,12 +21,12 @@ export default defineConfig({
   plugins: [
     react(),
     viteCompression(),
-    import.meta.env?.NODE_ENV === 'production'
+    process.env.NODE_ENV === 'production'
       ? htmlPlugin({
           scripts: [
             {
               content: `
-						var _hmt = _hmt || [];
+            var _hmt = _hmt || [];
             (function () {
               var hm = document.createElement("script");
               hm.src = "https://hm.baidu.com/hm.js?e136f7bf7934ff74190e817043cb4727";
