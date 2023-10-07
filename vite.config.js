@@ -10,7 +10,7 @@ export default defineConfig({
     port: 8000,
     proxy: {
       '/api': {
-        target: 'http://170.106.152.19',
+        target: 'https://ai.nieyunliang.com',
         rewrite: path => path.replace('/api', '')
       }
     }
@@ -21,10 +21,11 @@ export default defineConfig({
   plugins: [
     react(),
     viteCompression(),
-    htmlPlugin({
-      scripts: [
-        {
-          content: `
+    import.meta.env?.NODE_ENV === 'production'
+      ? htmlPlugin({
+          scripts: [
+            {
+              content: `
 						var _hmt = _hmt || [];
             (function () {
               var hm = document.createElement("script");
@@ -33,8 +34,9 @@ export default defineConfig({
               s.parentNode.insertBefore(hm, s);
             })();
 						`
-        }
-      ]
-    })
+            }
+          ]
+        })
+      : null
   ]
 })
