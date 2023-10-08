@@ -18,6 +18,35 @@ export default defineConfig({
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }]
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            const modules = id.toString().split('node_modules/')[1].split('/')
+
+            if (modules[1].includes('ant')) {
+              return 'ant'
+            } else if (modules[1].includes('react')) {
+              return 'react'
+            } else if (
+              modules[1].includes('highlight') ||
+              modules[1].includes('marked')
+            ) {
+              return 'code-highlight'
+            } else if (modules[1].includes('lodash')) {
+              return 'lodash'
+            } else {
+              console.log(modules[1])
+              return 'vendor'
+            }
+          }
+
+          return 'index'
+        }
+      }
+    }
+  },
   plugins: [
     react(),
     viteCompression(),
