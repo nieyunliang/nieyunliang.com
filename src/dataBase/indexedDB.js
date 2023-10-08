@@ -119,7 +119,8 @@ async function deleteStore(storeName) {
 async function insertData(storeName, data) {
   const db = await openDB()
   return new Promise((resolve, reject) => {
-    const _data = { ...data, created_time: data.created || Date.now() }
+    const _data = { ...data, created_time: Date.now() }
+
     if (!_data.id) {
       Object.assign(_data, { id: nanoid() })
     }
