@@ -1,6 +1,6 @@
 import { Carousel } from 'antd'
 import { getFileUrl } from '@/utils'
-import { Modal } from 'antd'
+import { Modal, Button } from 'antd'
 import { useBoolean } from 'ahooks'
 export default function AD() {
   const [modalOpen, { setFalse }] = useBoolean(true)
@@ -47,8 +47,15 @@ export default function AD() {
       <Modal
         title='扫码领红包'
         open={modalOpen}
-        footer={false}
-        onCancel={setFalse}
+        closeIcon={false}
+        footer={() => (
+          <Button
+            type='primary'
+            onClick={setFalse}
+          >
+            关闭
+          </Button>
+        )}
       >
         <div style={{ textAlign: 'center' }}>
           <img
