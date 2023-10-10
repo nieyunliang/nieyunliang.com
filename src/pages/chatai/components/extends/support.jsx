@@ -12,7 +12,7 @@ export default function Support() {
   const plus = getPlus()
   const [modalOpen, { setTrue, setFalse }] = useBoolean(false)
 
-  const { run: runOpen, loading } = useRequest(
+  const { runAsync: runOpen, loading } = useRequest(
     params => getVipState(params || plus?.account),
     {
       manual: !plus?.account,
@@ -23,8 +23,6 @@ export default function Support() {
             return
           }
           localStorage.setItem('plus', JSON.stringify(res.data))
-          message.success('开始享用GPT-4吧')
-          setFalse()
         } else {
           message.warning('账号不存在')
         }
@@ -35,7 +33,11 @@ export default function Support() {
   const inputRef = useRef()
   const handleOk = () => {
     const value = inputRef.current?.input?.value
-    value && runOpen(value)
+    value &&
+      runOpen(value).then(() => {
+        message.success('开始享用GPT-4吧')
+        setFalse()
+      })
   }
   return (
     <>
