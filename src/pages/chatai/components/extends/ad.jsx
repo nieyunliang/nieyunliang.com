@@ -3,9 +3,17 @@ import { getFileUrl } from '@/utils'
 import { Modal, Button } from 'antd'
 import { useBoolean } from 'ahooks'
 export default function AD() {
-  const [modalOpen, { setFalse }] = useBoolean(true)
+  const [modalOpen, { setTrue, setFalse }] = useBoolean(false)
   return (
     <>
+      <Button
+        type='primary'
+        danger
+        style={{ marginTop: 10 }}
+        onClick={setTrue}
+      >
+        领支付宝红包
+      </Button>
       <Carousel
         autoplay
         style={{ marginTop: 10 }}
@@ -60,7 +68,7 @@ export default function AD() {
         <div style={{ textAlign: 'center' }}>
           <img
             src={getFileUrl('hongbao.jpg')}
-            style={{ height: 300 }}
+            style={{ height: 400 }}
           />
         </div>
       </Modal>
