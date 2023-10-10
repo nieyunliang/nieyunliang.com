@@ -24,3 +24,9 @@ export const isMobile = () => {
   const { userAgent } = window.navigator
   return !!~userAgent.indexOf('iPhone') || !!~userAgent.indexOf('Android')
 }
+
+// 查询plus账号
+export const getPlus = () => {
+  const plus = localStorage.getItem('plus')
+  return plus ? JSON.parse(plus) : null
+}

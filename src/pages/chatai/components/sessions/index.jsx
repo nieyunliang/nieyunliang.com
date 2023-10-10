@@ -1,9 +1,10 @@
 import style from './index.module.less'
 import { SessionList } from '@/database'
 import { useState, useEffect } from 'react'
-import { Carousel } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { getFileUrl } from '@/utils'
+import AD from '../extends/ad'
+import Support from '../extends/support'
 
 export default function Sessions(props) {
   const sessionList = new SessionList()
@@ -87,41 +88,8 @@ export default function Sessions(props) {
           </div>
         ))}
       </div>
-      <Carousel autoplay>
-        <div>
-          <a
-            href='https://curl.qcloud.com/3MSaxbee'
-            target='_blank'
-          >
-            <img
-              src={getFileUrl('tencent.jpg')}
-              style={{ width: '100%' }}
-            />
-          </a>
-        </div>
-        <div>
-          <a
-            href='https://curl.qcloud.com/lG1rtroV'
-            target='_blank'
-          >
-            <img
-              src={getFileUrl('rhino-design-560x300.png')}
-              style={{ width: '100%' }}
-            />
-          </a>
-        </div>
-        <div>
-          <a
-            href='https://curl.qcloud.com/YHpNpJ4Q'
-            target='_blank'
-          >
-            <img
-              src={getFileUrl('new-user-560x300.jpg')}
-              style={{ width: '100%' }}
-            />
-          </a>
-        </div>
-      </Carousel>
+      <Support />
+      <AD />
     </div>
   )
 }

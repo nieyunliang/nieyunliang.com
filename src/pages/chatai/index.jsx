@@ -3,7 +3,7 @@ import style from './index.module.less'
 import { useState } from 'react'
 import { useReactive, useBoolean, useUpdateEffect } from 'ahooks'
 import { Input, Layout, ConfigProvider } from 'antd'
-import { isMobile } from '@/utils'
+import { isMobile, getPlus } from '@/utils'
 import {
   checkoutStore,
   createStore,
@@ -13,7 +13,7 @@ import {
 import { SessionList } from '@/database'
 import Sessions from './components/sessions'
 import Messages from './components/messages/messages'
-import sendMessageGPT from '../../utils/sendMessageGPT'
+import { sendMessageGPT } from '../../utils/api'
 import { getFileUrl } from '@/utils'
 
 const { Sider, Content, Footer } = Layout
@@ -125,6 +125,7 @@ export default function ChatAI() {
     }
   }
 
+  const isVip = getPlus()
   return (
     <Layout style={{ height: '100vh' }}>
       {!isMobile() && (
@@ -163,7 +164,11 @@ export default function ChatAI() {
                   <img
                     alt=''
                     className={style['btn-send']}
-                    src={getFileUrl('send.svg')}
+                    src={
+                      isVip
+                        ? getFileUrl('send-plus.svg')
+                        : getFileUrl('send.svg')
+                    }
                     onClick={send}
                   />
                 }

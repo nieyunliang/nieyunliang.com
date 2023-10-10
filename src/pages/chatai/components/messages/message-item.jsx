@@ -6,7 +6,7 @@ import { mangle } from 'marked-mangle'
 import { markedHighlight } from 'marked-highlight'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
 import { Space } from 'antd'
-import { formatDate, getFileUrl } from '@/utils'
+import { formatDate, getFileUrl, getPlus } from '@/utils'
 
 function ContentComponent({ content }) {
   const marked = new Marked(
@@ -34,13 +34,22 @@ function ContentComponent({ content }) {
 }
 
 function AssistantComponent({ message }) {
+  const isVip = getPlus()
   return (
     <div className={style['message-item']}>
       <Space className={style.sender}>
-        <img
-          src={getFileUrl('chatgpt-icon.svg')}
-          style={{ width: 30 }}
-        />
+        {!isVip ? (
+          <img
+            src={getFileUrl('chatgpt-plus-icon.svg')}
+            style={{ width: 30 }}
+          />
+        ) : (
+          <img
+            src={getFileUrl('chatgpt-icon.svg')}
+            style={{ width: 30 }}
+          />
+        )}
+
         <div>{formatDate(message.created_time)}</div>
       </Space>
       <div className={style.bubble}>
