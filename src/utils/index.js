@@ -30,3 +30,5 @@ export const getPlus = () => {
   const plus = localStorage.getItem('plus')
   return plus ? JSON.parse(plus) : null
 }
+
+export const isPlus = () => getPlus()?.expire > Date.now()

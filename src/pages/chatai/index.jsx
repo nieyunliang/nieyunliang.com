@@ -3,7 +3,7 @@ import style from './index.module.less'
 import { useState } from 'react'
 import { useReactive, useBoolean, useUpdateEffect } from 'ahooks'
 import { Input, Layout, ConfigProvider } from 'antd'
-import { isMobile, getPlus } from '@/utils'
+import { isMobile, isPlus } from '@/utils'
 import {
   checkoutStore,
   createStore,
@@ -125,7 +125,6 @@ export default function ChatAI() {
     }
   }
 
-  const isVip = getPlus()
   return (
     <Layout style={{ height: '100vh' }}>
       {!isMobile() && (
@@ -165,7 +164,7 @@ export default function ChatAI() {
                     alt=''
                     className={style['btn-send']}
                     src={
-                      isVip
+                      isPlus()
                         ? getFileUrl('send-plus.svg')
                         : getFileUrl('send.svg')
                     }

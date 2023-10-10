@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd'
 import { UnlockOutlined, CheckCircleTwoTone } from '@ant-design/icons'
-import { getFileUrl, getPlus, formatDate } from '@/utils'
+import { getFileUrl, getPlus, isPlus, formatDate } from '@/utils'
 import { useBoolean, useRequest } from 'ahooks'
 import { Input } from 'antd'
 import { Space } from 'antd'
@@ -10,7 +10,6 @@ import { message } from '@/utils/escapeantd'
 import { ConfigProvider } from 'antd'
 export default function Support() {
   const plus = getPlus()
-  const isVip = plus?.expire < Date.now()
   const [modalOpen, { setTrue, setFalse }] = useBoolean(false)
 
   const { run: runOpen, loading } = useRequest(
@@ -51,7 +50,7 @@ export default function Support() {
           />
         </a>
       </div>
-      {isVip ? (
+      {isPlus() ? (
         <>
           <ConfigProvider theme={{ token: { colorPrimary: '#8902ea' } }}>
             <Button type='primary'>
