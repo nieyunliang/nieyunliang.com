@@ -23,6 +23,7 @@ export default function Support() {
             return
           }
           localStorage.setItem('plus', JSON.stringify(res.data))
+          window.location.reload()
         } else {
           message.warning('账号不存在')
         }
@@ -33,11 +34,7 @@ export default function Support() {
   const inputRef = useRef()
   const handleOk = () => {
     const value = inputRef.current?.input?.value
-    value &&
-      runOpen(value).then(() => {
-        message.success('开始享用GPT-4吧')
-        setFalse()
-      })
+    value && runOpen(value)
   }
   return (
     <>
