@@ -13,26 +13,30 @@ export default function Support() {
   const isVip = plus?.expire < Date.now()
   const [modalOpen, { setTrue, setFalse }] = useBoolean(false)
 
-  const { run: runOpen, loading } = useRequest(getVipState, {
-    onSuccess: res => {
-      if (res.data) {
-        if (res.data.expire < Date.now()) {
-          message.warning('您的PLUS服务过期啦！')
-          return
+  const { run: runOpen, loading } = useRequest(
+    params => getVipState(params || plus?.account),
+    {
+      manual: !plus?.account,
+      onSuccess: res => {
+        if (res.data) {
+          if (res.data.expire < Date.now()) {
+            message.warning('您的PLUS服务过期啦！')
+            return
+          }
+          localStorage.setItem('plus', JSON.stringify(res.data))
+          message.success('开始享用GPT-4吧')
+          setFalse()
+        } else {
+          message.warning('账号不存在')
         }
-        localStorage.setItem('plus', JSON.stringify(res.data))
-        message.success('开始享用GPT-4吧')
-        setFalse()
-      } else {
-        message.warning('账号不存在')
       }
     }
-  })
+  )
 
   const inputRef = useRef()
   const handleOk = () => {
-    const account = inputRef.current?.input?.value || plus?.account || ''
-    account && runOpen(account)
+    const value = inputRef.current?.input?.value
+    value && runOpen(value)
   }
   return (
     <>
