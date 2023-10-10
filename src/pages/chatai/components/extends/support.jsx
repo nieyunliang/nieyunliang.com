@@ -23,7 +23,6 @@ export default function Support() {
             return
           }
           localStorage.setItem('plus', JSON.stringify(res.data))
-          window.location.reload()
         } else {
           message.warning('账号不存在')
         }
