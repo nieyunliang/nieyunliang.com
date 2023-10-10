@@ -21,7 +21,7 @@ export function sendMessageGPT(messages) {
   })
 }
 
-export function getVipState(account = '') {
+export function getVipState(account) {
   return new Promise((resolve, reject) => {
     fetch(`${import.meta.env.VITE_APP_API_URL}/vip_state`, {
       method: 'POST',
