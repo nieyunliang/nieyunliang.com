@@ -51,13 +51,13 @@ export default function ChatAI() {
   const sendMessage = _messages => {
     sendMessageGPT(_messages)
       .then(async res => {
-        if (res.message) {
+        if (res.error) {
           setErrMessage(`服务器出错了！[${res.name}: ${res.message}]`)
           return
         }
 
         const data = await saveMessagesLocal({
-          ...res.choices[0].message,
+          ...res.choices,
           id: res.id
         })
         messages.push({ ...data })

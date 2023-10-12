@@ -19,15 +19,8 @@ function setIndexedDBVersion(version) {
  */
 function openDB(version = getIndexedDBversion()) {
   return new Promise((resolve, reject) => {
-    //  兼容浏览器
-    const indexedDB =
-      window.indexedDB ||
-      window.mozIndexedDB ||
-      window.webkitIndexedDB ||
-      window.msIndexedDB
-
     // 打开数据库，若没有则会创建
-    const request = indexedDB.open(dbName, version)
+    const request = window.indexedDB.open(dbName, version)
     // 数据库打开成功回调
     request.onsuccess = function (event) {
       console.log('数据库打开成功')

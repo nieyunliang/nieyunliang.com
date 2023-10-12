@@ -10,7 +10,7 @@ export default defineConfig({
     port: 8000,
     proxy: {
       '/api': {
-        target: 'http://ai.nieyunliang.com',
+        target: 'https://ai.nieyunliang.com',
         rewrite: path => path.replace('/api', '')
       }
     }
