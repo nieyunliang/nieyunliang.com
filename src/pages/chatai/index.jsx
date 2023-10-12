@@ -57,7 +57,7 @@ export default function ChatAI() {
         }
 
         const data = await saveMessagesLocal({
-          ...res.choices,
+          ...res.message,
           id: res.id
         })
         messages.push({ ...data })
