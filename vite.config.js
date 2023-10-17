@@ -7,10 +7,11 @@ import htmlPlugin from 'vite-plugin-html-config'
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 8000,
+    port: 3000,
     proxy: {
       '/api': {
-        target: 'https://ai.nieyunliang.com',
+        // target: 'https://ai.nieyunliang.com',
+        target: 'http://localhost:8000',
         rewrite: path => path.replace('/api', '')
       }
     }

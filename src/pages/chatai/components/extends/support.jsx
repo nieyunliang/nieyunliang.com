@@ -18,7 +18,7 @@ export default function Support() {
       manual: !plus?.account,
       onSuccess: res => {
         if (res.data) {
-          if (res.data.expire < Date.now()) {
+          if (+new Date(res.data.expire_date) < Date.now()) {
             message.warning('您的PLUS服务过期啦！')
             return
           }
@@ -68,7 +68,19 @@ export default function Support() {
               fontSize: 12
             }}
           >
-            PLUS到期时间：{plus?.expire ? formatDate(plus.expire) : ''}
+            PLUS到期时间：
+            {plus?.expire_date ? formatDate(plus.expire_date) : ''}
+          </p>
+          <p
+            style={{
+              marginTop: 6,
+              color: '#eee',
+              textAlign: 'center',
+              fontSize: 12
+            }}
+          >
+            GPT4模型剩余请求次数：
+            {plus?.count ?? 0}
           </p>
         </>
       ) : (

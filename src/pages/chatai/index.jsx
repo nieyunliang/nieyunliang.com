@@ -51,8 +51,8 @@ export default function ChatAI() {
   const sendMessage = _messages => {
     sendMessageGPT(_messages)
       .then(async res => {
-        if (res.error) {
-          setErrMessage(`服务器出错了！[${res.name}: ${res.message}]`)
+        if (res.code || res.error) {
+          setErrMessage(`出错了：[${res.message || res.sqlMessage}]`)
           return
         }
 
