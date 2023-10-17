@@ -1,7 +1,7 @@
-import { Space, Image, Alert } from 'antd'
+import { Space, Alert } from 'antd'
 import style from './index.module.less'
 import MessageItem from './message-item'
-import { getFileUrl } from '@/utils'
+import { getFileUrl, isPlus } from '@/utils'
 
 export default function Messages({ messages, loading, error }) {
   return (
@@ -20,7 +20,11 @@ export default function Messages({ messages, loading, error }) {
         <div className={style['message-item']}>
           <Space className={style.sender}>
             <img
-              src={getFileUrl('chatgpt-icon.svg')}
+              src={
+                isPlus()
+                  ? getFileUrl('chatgpt-plus-icon.svg')
+                  : getFileUrl('chatgpt-icon.svg')
+              }
               style={{ width: 30 }}
             />
           </Space>

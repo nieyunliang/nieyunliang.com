@@ -74,9 +74,9 @@ function UserComponent({ message }) {
 }
 
 export default function MessageItem({ message }) {
-  return message.role === 'assistant' ? (
-    <AssistantComponent message={message} />
-  ) : (
+  return message.role === 'user' ? (
     <UserComponent message={message} />
+  ) : (
+    <AssistantComponent message={message} />
   )
 }
